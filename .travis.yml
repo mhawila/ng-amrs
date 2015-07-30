@@ -20,4 +20,4 @@ branches:
 # whitelist
 branches:
   only:
-    - master
+    - travis-for-willa
