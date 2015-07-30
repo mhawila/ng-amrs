@@ -4,10 +4,14 @@ node_js:
   - 'iojs'
   - '0.12'
   - '0.10'
-before_script:
-  - 'npm install -g bower grunt-cli'
+before_install:
+  -'npm install -g bower grunt-cli'
+install:
   - 'bower install'
   # blacklist
+after_success:
+  - 'grunt build'
+  
 branches:
   except:
     - legacy
