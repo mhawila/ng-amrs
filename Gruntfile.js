@@ -256,15 +256,18 @@ module.exports = function (grunt) {
     //     }
     //   }
     // },
-    // uglify: {
-    //   dist: {
-    //     files: {
-    //       '<%= yeoman.dist %>/scripts/scripts.js': [
-    //         '<%= yeoman.dist %>/scripts/scripts.js'
-    //       ]
-    //     }
-    //   }
-    // },
+    uglify: {
+      // dist: {
+      //   files: {
+      //     '<%= yeoman.dist %>/scripts/scripts.js': [
+      //       '<%= yeoman.dist %>/scripts/scripts.js'
+      //     ]
+      //   }
+      // },
+      options: {
+        mangle: false
+      }
+    },
     // concat: {
     //   dist: {}
     // },
@@ -343,7 +346,7 @@ module.exports = function (grunt) {
             '*.html',
             'views/{,*/}*.html',
             'images/{,*/}*.{webp}',
-            'styles/fonts/{,*/}*.*'
+            'styles/fonts/{,*/}*.*',
           ]
         }, {
           expand: true,
@@ -355,6 +358,11 @@ module.exports = function (grunt) {
           cwd: 'bower_components/bootstrap/dist',
           src: 'fonts/*',
           dest: '<%= yeoman.dist %>'
+        }, {
+          expand: true,
+          cwd: 'bower_components',
+          src: '**/*.{js,css}',
+          dest: '<%= yeoman.dist %>/bower_components'
         }]
       },
       styles: {
@@ -432,7 +440,7 @@ module.exports = function (grunt) {
     'cssmin',
     'uglify',
     'filerev',
-    'usemin',
+    // 'usemin',
     'htmlmin'
   ]);
 
