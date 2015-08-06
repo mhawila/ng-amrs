@@ -12,12 +12,19 @@ branches:
   except:
     - legacy
     - experimental
+    - master
 
 # whitelist
 branches:
   only:
+<<<<<<< HEAD
     - master
     
+=======
+    - no-mini-build
+    
+# Webhooks notifications
+>>>>>>> cb80795... Disabling mini because it breaks the build
 notifications:
   webhooks:
     urls:
