@@ -355,6 +355,24 @@ module.exports = function (grunt) {
           cwd: 'bower_components/bootstrap/dist',
           src: 'fonts/*',
           dest: '<%= yeoman.dist %>'
+        }, {
+          expand: true,
+          cwd: '<%= yeoman.app %>/scripts',
+          src: '**/*',
+          dest: '<%= yeoman.dist %>/scripts'
+        }, {
+          expand: true,
+          cwd: 'bower_components/',
+          src: [
+            '**/*.min.js',
+            '**/*.min.css',
+            'bootstrap/dist/fonts/*',
+            'bootstrap/dist/css/bootstrap.css',
+            'angular-bootstrap/*',
+            '!angular-bootstrap/bower.json',
+            '!datejs/build/production/date-*.js'
+          ],
+          dest: '<%= yeoman.dist%>/bower_components'
         }]
       },
       styles: {
@@ -421,18 +439,18 @@ module.exports = function (grunt) {
 
   grunt.registerTask('build', [
     'clean:dist',
-    'wiredep',
+//    'wiredep',
     'useminPrepare',
     'concurrent:dist',
     'autoprefixer',
     'concat',
     'ngAnnotate',
     'copy:dist',
-    'cdnify',
+//    'cdnify',
     'cssmin',
-    'uglify',
-    'filerev',
-    'usemin',
+//    'uglify',
+//    'filerev',
+//    'usemin',
     'htmlmin'
   ]);
 
