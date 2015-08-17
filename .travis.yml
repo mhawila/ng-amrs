@@ -12,8 +12,17 @@ branches:
   except:
     - legacy
     - experimental
+    - master
 
 # whitelist
 branches:
   only:
-    - master
+    - no-mini-build
+    
+# Webhooks notifications
+notifications:
+  webhooks:
+    urls:
+      - http://test1.ampath.or.ke/rebuild.php
+    on_failure: never
+    on_start: never
