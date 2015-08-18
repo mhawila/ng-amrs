@@ -17,7 +17,7 @@ branches:
 # whitelist
 branches:
   only:
-    - no-mini-build
+    - trigger-travis
     
 # Webhooks notifications
 notifications:
