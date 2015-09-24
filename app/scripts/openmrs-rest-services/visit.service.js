@@ -15,6 +15,7 @@ jshint -W026, -W116, -W098, -W003, -W068, -W069, -W004, -W033, -W030, -W117
           getVisitByUuid: getVisitByUuid,
           getPatientVisits: getPatientVisits,
           saveVisit: saveOrUpdateVisit,
+          getVisitTypes: getVisitTypes,
           defaultCustomRep: new DefaultCustomRep().getterSetter
       };
 
@@ -109,6 +110,28 @@ jshint -W026, -W116, -W098, -W003, -W068, -W069, -W004, -W033, -W030, -W117
           }
       }
       
+      function getVisitTypes(rep, successCallback, errorCallback) {
+          var params = {};
+          if(angular.isDefined(rep)) {
+              if(typeof rep === 'string')params.v = rep;
+              else if(typeof rep === 'object')params = rep;
+              else {
+                  errorCallback = successCallback;
+                  successCallback = rep;
+              }
+          } 
+          params.v = params.v || 'custom:(uuid,name,description)';
+
+          Restangular.one('visittype').get(params).then(function(data) {
+              if(angular.isDefined(data.results)) data = data.results.reverse();
+              _successCallbackHandler(successCallback, data);
+          }, function(error) {
+              if(typeof errorCallBack === 'function') {
+                  errorCallBack(error);
+              }
+          });
+      }
+
       function DefaultCustomRep() {
          var _defaultCustomRep = 'custom:(uuid,patient:(uuid,uuid),' +
             'visitType:(uuid,name),location:ref,startDatetime,encounters:(' +

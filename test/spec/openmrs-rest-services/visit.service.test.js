@@ -146,6 +146,34 @@ jshint -W026, -W116, -W098, -W003, -W068, -W004, -W033, -W030, -W117
     it('should set default custom representation', function() {
         visitResService.defaultCustomRep('test representation');
         expect(visitResService.defaultCustomRep()).to.equal('test representation');
+    });
+
+    it('getVisitTypes should return list of visit types', function() {
+        /* jshint ignore: start */
+        var visitTypesResponse = {
+              "results": [{
+                  "uuid": "test-visit-uuid-1",
+                  "name": "Visit type 1",
+                  "description": "visit type one"
+              }, {
+                    "uuid": "test-visit-uuid-2",
+                    "name": "Visit type 2",
+                    "description": "visit type two"
+              }, {
+                    "uuid": "test-visit-uuid-3",
+                    "name": "Visit type 3",
+                    "description": "visit type three"
+              }]
+        };
+        /* jshint ignore: end */
+        var defaultCustomRep = 'custom:(uuid,name,description)';
+        httpBackend.expectGET(testRestUrl + 'visittype?v=' + defaultCustomRep)
+            .respond(visitTypesResponse);
+        
+        visitResService.getVisitTypes(function(data) {
+            expect(data).to.be.array;
+            expect(data.length).to.equal(visitTypesResponse.results.length);
+        });
     });     
   });
 })();
