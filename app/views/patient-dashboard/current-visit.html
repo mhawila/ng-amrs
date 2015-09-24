@@ -1,0 +1,56 @@
+<div>
+    <!-- Start Time section -->
+    <div class="container-fluid bg-info lead" data-ng-show="visitStarted">
+        Visit Started at: {{visitStartDatetime | date: 'hh:mm:ss a MMM, dd yyyy'}}
+    </div>
+    <div data-ng-hide="busyChecking || visitStarted">
+        <button class="btn btn-primary" data-ng-click="startNewVisit()">
+            Start New Visit
+        </button>
+    </div>
+    <div data-ng-show="someEncountersCompleted" class="panel panel-primary" style="padding:2px;">
+      <div class="panel panel-default">
+        <table class="table table-striped table-hover">
+          <thead>
+          <tr>
+            <th>Encounter Date</th>
+            <th>Encounter Type</th>
+            <th>Form</th>
+            <th>Location</th>
+            <th>Provider</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr style="cursor: pointer;" data-ng-click="loadEncounterForm(encounterModel)"
+              data-ng-repeat="encounterModel in completedEncounters">
+            <td>{{encounterModel.encounterDate() | date: 'MMM dd, yyyy'}}</td>
+            <td>{{encounterModel.encounterTypeName()}}</td>
+            <td>{{encounterModel.formName()}}</td>
+            <td>{{encounterModel.locationName() | titlecase}}</td>
+            <td>{{encounterModel.providerName() | titlecase}}</td>
+            <td>
+              <a href="#/encounter/{{encounterModel.uuid()}}/patient/{{encounterModel.patientUuid()}}"><span style="font-size:14px;" class="glyphicon glyphicon-zoom-in"></span></a>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <pagination boundary-links="true" ng-model="vm.currentPage" total-items="vm.totalItems" items-per-page="vm.entryLimit"
+                  ss="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" rotate="false"
+                  style="margin-top: 0px; margin-bottom: 0px; margin-left:2px;">
+      </pagination>
+
+    </div>
+
+    <!-- Add a section for incomplete forms -->
+    <div data-ng-show="visitStarted" class="container-fluid">
+        <p class="lead bg-info">Choose a Form to Fill:</p></hr>
+        <fieldset>
+        <span data-ng-repeat="status in formsFilledStatus">
+            <p data-ng-hide="status.filled">
+                <a href="#/form/{{status.shortName}}/patient/{{patientUuid}}">{{status.name}}</a>
+            </p>
+        </span>
+    </fieldset>
+    </div>
+</div>
