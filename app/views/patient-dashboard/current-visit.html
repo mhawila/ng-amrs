@@ -2,11 +2,29 @@
     <!-- Start Time section -->
     <div class="container-fluid bg-info lead" data-ng-show="visitStarted">
         Visit Started at: {{visitStartDatetime | date: 'hh:mm:ss a MMM, dd yyyy'}}
-    </div>
-    <div data-ng-hide="busyChecking || visitStarted">
-        <button class="btn btn-primary" data-ng-click="startNewVisit()">
-            Start New Visit
+        <button class="btn btn-danger" data-ng-click="cancelVisit(currentVisitUuid)">
+            Cancel This Visit
         </button>
+    </div>
+    <div class="panel panel-default" data-ng-show="visitTypesLoaded && !visitStarted">
+        <div class="panel-heading">
+            Choose Visit type to start.
+        </div>
+        <div class="panel-body">
+        <form  class="form-inline">
+            <div class="form-group">
+                <span data-ng-repeat="visitType in visitTypes">
+                    <input type="radio" data-ng-model="newVisit.visitType" value="{{visitType.uuid}}" id={{visitType.uuid}}>
+                    <label for="{{visitType.uuid}}">{{visitType.name}}</label>
+                </span>
+            </div>
+        </form>
+        </div> 
+    <div class="panel-footer">
+    <button class="btn btn-primary" data-ng-click="startNewVisit()" data-ng-disabled="!newVisit.visitType">
+        Start New Visit
+    </button>
+    </div>
     </div>
     <div data-ng-show="someEncountersCompleted" class="panel panel-primary" style="padding:2px;">
       <div class="panel panel-default">
@@ -48,7 +66,7 @@
         <fieldset>
         <span data-ng-repeat="status in formsFilledStatus">
             <p data-ng-hide="status.filled">
-                <a href="#/form/{{status.shortName}}/patient/{{patientUuid}}">{{status.name}}</a>
+                <a href="#/form/{{status.shortName}}/patient/{{patientUuid}}/visit/{{newVisit.uuid}}">{{status.name}}</a>
             </p>
         </span>
     </fieldset>

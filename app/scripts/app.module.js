@@ -66,18 +66,6 @@
           controller: 'FormentryCtrl',
           data: { requireLogin: true }
         })
-        .state('forms', {
-          url: '/form/:formuuid/patient/:uuid',
-          templateUrl: 'views/formentry/formentry.html',
-          controller: 'FormentryCtrl',
-          data: { requireLogin: true }
-        })
-        .state('tabs', {
-          url: '/form/tabs',
-          templateUrl: 'views/formentry/tab.html',
-          controller: 'tabCtrl',
-          data: { requireLogin: true }
-        })
         .state('url-selector', {
           url: '/url-selector',
           templateUrl: 'views/main/url-selector.html',

@@ -24,13 +24,16 @@ jshint -W003, -W026
         '$stateParams',
         'EncounterResService',
         'EncounterModel',
+        '$filter',
         '$timeout'
     ];
 
     function currentVisitController($scope, $rootScope, vService, $stateParams,
-                                    encService, encModel, $timeout) {
+                                    encService, encModel, $filter, $timeout) {
+        $scope.newVisit = {};
         $scope.someEncountersCompleted = false;
-        $scope.busyChecking = true;
+        $scope.busy = true;
+        $scope.visitTypesLoaded = false;
         $scope.completedEncounters = [];
         $scope.visitDate = getFormattedDate(new Date());
         $scope.hasCompletedForms = false;
@@ -52,7 +55,10 @@ jshint -W003, -W026
             }
         ];
 
-        function getFormattedDate(date) {
+        function getFormattedDate(date, format) {
+            if(angular.isUndefined(format)) {
+                format = 'yyyy-MM-ddTHH:mm:ss';
+            }
             if(typeof date === 'string') {
                 date = new Date(date);
             }
@@ -96,11 +102,11 @@ jshint -W003, -W026
             });
         },500);
 
-        $timeout(function(patientUuid) {
+        $timeout(function checkIfVisitStarted() {
              var simpleVisitRep = 'custom:(uuid,patient:(uuid,uuid),' +
                      'visitType:(uuid,name),location:ref,startDatetime)';
              var params = {
-                 patientUuid: $stateParams.uuid,
+                 patientUuid: $scope.patientUuid,
                  startDatetime: $scope.visitDate,
                  v: simpleVisitRep
              }
@@ -115,14 +121,36 @@ jshint -W003, -W026
              } else {
                  $scope.visitStarted = false;
              }
-             $scope.busyChecking = false;
+             $scope.busy = false;
+         },1000);
+
+         $timeout(function loadVisitTypes() {
+             vService.getVisitTypes(function(data) {
+                 $scope.visitTypes = data;
+                 $scope.visitTypesLoaded = true;
+             });
          },1000);
 
          $scope.startNewVisit = function() {
              $scope.visitStartDatetime = new Date();
-             console.log('Another date here....', $scope.visitStartDatetime);
-             $scope.visitStarted = true;
-         }
+
+             //Format date
+             var startDatetime = $filter('date')($scope.visitStartDatetime,
+                'yyyy-MM-dd HH:mm:ss', '+0300');
+             //Create visit
+             var newVisit = {
+                 patient: $scope.patientUuid,
+                 visitType: $scope.newVisit.visitType,
+                 startDatetime: startDatetime
+             };
+             console.log(newVisit)
+
+             vService.saveVisit(newVisit, function(data) {
+                 console.log('See data if there...',data);
+                 $scope.newVisit.uuid = data.uuid;
+                 $scope.visitStarted = true;
+             });
+         };
 
          $scope.hasCompletedForms = function(patientUuid) {
 

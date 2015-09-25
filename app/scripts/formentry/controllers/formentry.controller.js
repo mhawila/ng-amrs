@@ -100,7 +100,10 @@ jshint -W098, -W003, -W068, -W004, -W033, -W030, -W117, -W069, -W106
               UtilRestService.confirmBrowserExit();                     
        }
        
-        var params={uuid: $stateParams.encuuid };
+        var params={
+            uuid: $stateParams.encuuid,
+            visitUuid: $stateParams.visitUuid
+         };
         //var params = {uuid: '18a1f142-f2c6-4419-a5db-5f875020b887'};
         var encData;
         var selectedForm //= $stateParams.formuuid;
@@ -150,9 +153,8 @@ jshint -W098, -W003, -W068, -W004, -W033, -W030, -W117, -W069, -W106
               var form = selectedForm;
               // console.log($stateParams.formuuid)
               // console.log('Selected Form');
-              console.log('current tabs',$scope.vm.tabs);
-              console.log('Original tabs',$scope.vm.formlyFields);
-              var payLoad = FormentryService.updateFormPayLoad($scope.vm.model,$scope.vm.formlyFields, $scope.vm.patient,form,params.uuid);
+              // console.log(form);
+              var payLoad = FormentryService.updateFormPayLoad($scope.vm.model,$scope.vm.tabs, $scope.vm.patient,form,params);
               console.log(payLoad);
               if (!_.isEmpty(payLoad.obs))
               {

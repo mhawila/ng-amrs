@@ -1144,7 +1144,7 @@ jshint -W106, -W052, -W098, -W003, -W068, -W004, -W033, -W030, -W117, -W116, -W0
         /*
         Method to update the payload for existing encounter
         */
-        function updateFormPayLoad(model, formly_schema, patient, form, uuid)
+        function updateFormPayLoad(model, formly_schema, patient, form, params)
         {
           /*
           The objective of this method is to create a payload with only updated
@@ -1431,10 +1431,14 @@ jshint -W106, -W052, -W098, -W003, -W068, -W004, -W033, -W030, -W117, -W116, -W0
             // console.log('Patient Selected', patient.uuid())
             formPayLoad['patient'] = patient.uuid();
             formPayLoad['encounterType'] = form.encounterType;
-            if(uuid !== undefined)
+            if(params.uuid !== undefined)
             {
               //encounter uuid for existing encounter
-              formPayLoad['uuid'] = uuid;
+              formPayLoad['uuid'] = params.uuid;
+            }
+
+            if(angular.isDefined(params.visitUuid)) {
+                formPayLoad['visit'] = params.visitUuid;
             }
           }
           return formPayLoad;

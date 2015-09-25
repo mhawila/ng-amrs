@@ -8,14 +8,27 @@
             'app.openmrsRestServices',
             'ngMessages',
             'ui.bootstrap',
-	          'ui.select',
+	        'ui.select',
             'angularMoment',
             'dialogs.main',
             'pascalprecht.translate',
             'dialogs.default-translations'
         ])
-
-
+    .config(function ($stateProvider) {
+      $stateProvider
+        .state('forms', {
+          url: '/form/:formuuid/patient/:uuid/visit/:visitUuid',
+          templateUrl: 'views/formentry/formentry.html',
+          controller: 'FormentryCtrl',
+          data: { requireLogin: true }
+        })
+        .state('tabs', {
+          url: '/form/tabs',
+          templateUrl: 'views/formentry/tab.html',
+          controller: 'tabCtrl',
+          data: { requireLogin: true }
+        })
+    })
     .run(function(formlyConfig, formlyValidationMessages, formlyApiCheck) {
 
       // console.log(formlyApiCheck)
