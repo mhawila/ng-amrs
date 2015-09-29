@@ -69,19 +69,16 @@ jshint -W106, -W098, -W003, -W068, -W004, -W033, -W030, -W117, -W116, -W069, -W0
       }],
       overwriteOk: true,
       defaultOptions: {
-          parsers: [function parseDate(value) {
-              console.info('Filter is: ', $filter);
-              console.info('Parser is called .... with value ' + value);
-              var ret = $filter('date')(value || new Date(), 'yyyy-MM-dd HH:mm:ss', '+0300');
-              console.info('Parsed: ', ret);
-              return ret;
-          }],
-          formatters: [function(value){
-              console.info('Formatter called... with value ', value);
-              var ret = $filter('date')(value,'dd-MMM-yyyy','+0300');
-              console.info('Formatted: ', ret);
-              return ret;
-          }],  
+          parsers: [
+              function parseDate(value) {
+                  return = $filter('date')(new Date(value), 'yyyy-MM-dd HH:mm:ss', '+0300');     
+              }
+          ],
+          formatters: [
+                function(value, $viewValue){
+                    return $filter('date')(new Date(value),'dd-MMM-yyyy','+0300');
+                }
+          ],  
         ngModelAttrs: ngModelAttrs,
         templateOptions: {
           addonLeft: {
