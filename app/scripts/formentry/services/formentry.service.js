@@ -1144,7 +1144,7 @@ jshint -W106, -W052, -W098, -W003, -W068, -W004, -W033, -W030, -W117, -W116, -W0
         /*
         Method to update the payload for existing encounter
         */
-        function updateFormPayLoad(model, formly_schema, patient, form, params)
+        function updateFormPayLoad(model, formly_schema, patient, form, uuid)
         {
           /*
           The objective of this method is to create a payload with only updated
@@ -1431,14 +1431,10 @@ jshint -W106, -W052, -W098, -W003, -W068, -W004, -W033, -W030, -W117, -W116, -W0
             // console.log('Patient Selected', patient.uuid())
             formPayLoad['patient'] = patient.uuid();
             formPayLoad['encounterType'] = form.encounterType;
-            if(params.uuid !== undefined)
+            if(uuid !== undefined)
             {
               //encounter uuid for existing encounter
-              formPayLoad['uuid'] = params.uuid;
-            }
-
-            if(angular.isDefined(params.visitUuid)) {
-                formPayLoad['visit'] = params.visitUuid;
+              formPayLoad['uuid'] = uuid;
             }
           }
           return formPayLoad;
@@ -1619,7 +1615,7 @@ jshint -W106, -W052, -W098, -W003, -W068, -W004, -W033, -W030, -W117, -W116, -W0
                   }
                   else if (sec_field.default === 'now')
                   {
-                    defaultValue_ = new Date();
+                    defaultValue_ = Date.today();
                   }
                   else {
                     defaultValue_ = sec_field.default;
@@ -1649,7 +1645,6 @@ jshint -W106, -W052, -W098, -W003, -W068, -W004, -W033, -W030, -W117, -W116, -W0
                       dateValidator: FormValidator.getDateValidatorObject(sec_field.validators[0]) //this  will require refactoring as we move forward
                     }
                   }
-                  console.info(field.parsers);
                   addToReadyFields(field)
                 }
                 else if(sec_field.type === 'encounterProvider')
@@ -1812,8 +1807,7 @@ function addFieldToValidationMetadata(field, section, page, typeOfField){
   /*
   Private method to create  formly fields without group
   */
-  function createFormlyField(obs_field)
-  {
+  function createFormlyField(obs_field){
     //console.log(obs_field)
     obs_id = obs_id + 1;
     var defaultValue_
@@ -1821,7 +1815,9 @@ function addFieldToValidationMetadata(field, section, page, typeOfField){
     {
         defaultValue_ = obs_field.default;
     }
-
+    // else {
+    //   defaultValue_ = '';
+    // }
     var hideExpression_;
     var disableExpression_ = '';
 
@@ -2239,50 +2235,52 @@ function createRepeatingFormlyField(obs_field, gpSectionRnd)
 
 /*Payload Creation helper functions */
 /* private method to format values before posting to the payload*/
-function getFormattedValue(value) 
-{
-    // console.log('Passed value to the model is', value);
-    // if(!value) return value;
-    // 
-    // if(typeof value === 'number') return value;
-    // 
-    // if(Object.prototype.toString.call(value) === '[object Date]'){
-    //   // if(_.contains(value,':'))
-    //   console.log('convert to date', value)
-    //     value = moment(value).format('YYYY-MM-DDTHH:mm:ssZ');
-    // }
-    // 
-    // //moment().utc();
-    // 
-    // var isDateValid = false;
-    // if (isDateValid === false)
-    // {
-    //   isDateValid = moment(value, 'YYYY-MM-DDTHH:mm:ssZ').isValid();
-    //   if (isDateValid)
-    //   {
-    //     var stringToValidate = value.substr(0, 10);
-    //     console.log('xxxx ',stringToValidate)
-    //     var rgexp = /(^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$)/;
-    //     var isValidDate = rgexp.test(stringToValidate);
-    //     console.log('yyyy ',isValidDate)
-    //     if (isValidDate)
-    //     {
-    //       isDateValid = true;
-    //     }
-    //     else {
-    //       isDateValid = false;
-    //     }
-    //   }
-    // 
-    // 
-    // }
-    // if(isDateValid)
-    // {
-    //   console.log('convert to date XXX', value)
-    //   var localTime = moment(value).format('YYYY-MM-DDTHH:mm:ss.SSSZZ');
-    //   return localTime;
-    // }
-    // console.log('Returned value',value);
+function getFormattedValue(value){
+    console.log(value)
+    if(!value) return value;
+
+    if(typeof value === 'number') return value;
+
+    if(Object.prototype.toString.call(value) === '[object Date]'){
+      // if(_.contains(value,':'))
+      console.log('convert to date', value)
+        value = moment(value).format('YYYY-MM-DDTHH:mm:ssZ');
+    }
+
+    //moment().utc();
+
+    var isDateValid = false;
+    if (isDateValid === false)
+    {
+      isDateValid = moment(value, 'YYYY-MM-DDTHH:mm:ssZ').isValid();
+      if (isDateValid)
+      {
+        var stringToValidate = value.substr(0, 10);
+        console.log('xxxx ',stringToValidate)
+        var rgexp = /(^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$)/;
+        var isValidDate = rgexp.test(stringToValidate);
+        console.log('yyyy ',isValidDate)
+        if (isValidDate)
+        {
+          isDateValid = true;
+        }
+        else {
+          isDateValid = false;
+        }
+      }
+
+
+    }
+
+
+
+    if(isDateValid)
+    {
+      console.log('convert to date XXX', value)
+      var localTime = moment(value).format('YYYY-MM-DDTHH:mm:ss.SSSZZ');
+      return localTime;
+    }
+console.log('Returned value',value);
     return value;
 }
     }
