@@ -2285,6 +2285,16 @@ function getFormattedValue(value){
 console.log('Returned value',value);
     return value;
 }
+
+        function parseDate(value) {
+            if(!(value instanceof Date)){
+                value = Date.parse(value);
+                if(angular.isUndefined(value)) {
+                    return '';
+                }
+            }
+            return $filter('date')(value,'yyyy-MM-dd HH:mm:ss', '+0300');
+        }
     }
 
 })();
