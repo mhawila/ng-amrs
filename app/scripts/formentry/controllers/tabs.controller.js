@@ -44,12 +44,12 @@ jshint -W098, -W003, -W068, -W004, -W033, -W030, -W117, -W069
                     fields: [
                         {
                           key: 'encounterDate',
-                          type: 'datepicker',
-                          defaultValue: new Date(),
+                          type: 'datetimepicker',
+                          defaultValue: parseDate(new Date()),
                           templateOptions: {
-                            // type: 'text',
+                            type: 'text',
                             label: 'Tarehe',
-                            datepickerPopup: 'dd-MMM-yyyy HH:mm:ss'
+                            // datepickerPopup: 'dd-MMM-yyyy HH:mm:ss'
                           }
                       }
                     ]

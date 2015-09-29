@@ -8,6 +8,7 @@
             'app.openmrsRestServices',
             'ngMessages',
             'ui.bootstrap',
+            'ui.bootstrap.datetimepicker',
 	        'ui.select',
             'angularMoment',
             'dialogs.main',

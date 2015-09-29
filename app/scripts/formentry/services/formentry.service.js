@@ -8,9 +8,11 @@ jshint -W106, -W052, -W098, -W003, -W068, -W004, -W033, -W030, -W117, -W116, -W0
         .module('app.formentry')
         .factory('FormentryService', FormentryService);
 
-    FormentryService.$inject = ['$http', 'SearchDataService', 'moment', 'FormValidator', 'CurrentLoadedFormService'];
+    FormentryService.$inject = ['$http', 'SearchDataService', 'moment', 
+    'FormValidator', 'CurrentLoadedFormService', '$filter'];
 
-    function FormentryService( $http, SearchDataService, moment, FormValidator, CurrentLoadedFormService) {
+    function FormentryService( $http, SearchDataService, moment, FormValidator,
+        CurrentLoadedFormService, $filter) {
         var service = {
             createForm: createForm,
             validateForm:validateForm,
@@ -1469,7 +1471,7 @@ jshint -W106, -W052, -W098, -W003, -W068, -W004, -W033, -W030, -W117, -W116, -W0
                   }
                   else if (key === 'encounterDate' && val[key] !== undefined)
                   {
-                    formPayLoad.encounterDatetime = getFormattedValue(val[key]);
+                    formPayLoad.encounterDatetime = parseDate(val[key]);
                   }
                   else if (key === 'encounterLocation' && val[key] !== undefined) {
                     //add property to the payload
@@ -1632,13 +1634,13 @@ jshint -W106, -W052, -W098, -W003, -W068, -W004, -W033, -W030, -W117, -W116, -W0
 
                   field = {
                     key: sec_field.type,
-                    type: 'datepicker',
+                    type: 'datetimepicker',
                     defaultValue: defaultValue_,
                     data: {encounter:'enc_' + sec_field.type},
                     templateOptions: {
                       type: 'text',
                       label: sec_field.label,
-                      datepickerPopup: 'dd-MMMM-yyyy',
+                    //   datepickerPopup: 'dd-MMMM-yyyy',
                       required:required
                     },
                     validators: {
