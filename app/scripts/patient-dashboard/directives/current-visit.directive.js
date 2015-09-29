@@ -30,7 +30,7 @@ jshint -W003, -W026
 
     function currentVisitController($scope, $rootScope, vService, $stateParams,
                                     encService, encModel, $filter, $timeout) {
-        $scope.newVisit = {};
+        $scope.currentVisit = {};
         $scope.someEncountersCompleted = false;
         $scope.busy = true;
         $scope.visitTypesLoaded = false;
@@ -103,6 +103,7 @@ jshint -W003, -W026
         },500);
 
         $timeout(function checkIfVisitStarted() {
+            console.info('Checking whether visit has started');
              var simpleVisitRep = 'custom:(uuid,patient:(uuid,uuid),' +
                      'visitType:(uuid,name),location:ref,startDatetime)';
              var params = {
@@ -110,18 +111,20 @@ jshint -W003, -W026
                  startDatetime: $scope.visitDate,
                  v: simpleVisitRep
              }
-             var visits = [];
              vService.getPatientVisits(params, function(data) {
-                 visits = data;
+                 var visits = data;
+                 if(visits.length > 0) {
+                     console.log('Patient ', $scope.patientUuid, ' has visit started');
+                     $scope.currentVisit.uuid = data[0].uuid;
+                     $scope.visitStarted = true;
+                 } else {
+                     console.log('No visit started yet');
+                     $scope.visitStarted = false;
+                 }
+                 $scope.busy = false;
              }, function(error) {
                  console.log('Error: An error occured');
              });
-             if(visits.length > 0) {
-                 $scope.visitStarted = true;
-             } else {
-                 $scope.visitStarted = false;
-             }
-             $scope.busy = false;
          },1000);
 
          $timeout(function loadVisitTypes() {
@@ -147,7 +150,7 @@ jshint -W003, -W026
 
              vService.saveVisit(newVisit, function(data) {
                  console.log('See data if there...',data);
-                 $scope.newVisit.uuid = data.uuid;
+                 $scope.currentVisit.uuid = data.uuid;
                  $scope.visitStarted = true;
              });
          };

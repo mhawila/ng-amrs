@@ -14,14 +14,14 @@
         <form  class="form-inline">
             <div class="form-group">
                 <span data-ng-repeat="visitType in visitTypes">
-                    <input type="radio" data-ng-model="newVisit.visitType" value="{{visitType.uuid}}" id={{visitType.uuid}}>
+                    <input type="radio" data-ng-model="currentVisit.visitType" value="{{visitType.uuid}}" id={{visitType.uuid}}>
                     <label for="{{visitType.uuid}}">{{visitType.name}}</label>
                 </span>
             </div>
         </form>
         </div> 
     <div class="panel-footer">
-    <button class="btn btn-primary" data-ng-click="startNewVisit()" data-ng-disabled="!newVisit.visitType">
+    <button class="btn btn-primary" data-ng-click="startNewVisit()" data-ng-disabled="!currentVisit.visitType">
         Start New Visit
     </button>
     </div>
@@ -66,7 +66,7 @@
         <fieldset>
         <span data-ng-repeat="status in formsFilledStatus">
             <p data-ng-hide="status.filled">
-                <a href="#/form/{{status.shortName}}/patient/{{patientUuid}}/visit/{{newVisit.uuid}}">{{status.name}}</a>
+                <a href="#/form/{{status.shortName}}/patient/{{patientUuid}}/visit/{{currentVisit.uuid}}">{{status.name}}</a>
             </p>
         </span>
     </fieldset>
