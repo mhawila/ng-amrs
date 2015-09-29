@@ -1146,7 +1146,7 @@ jshint -W106, -W052, -W098, -W003, -W068, -W004, -W033, -W030, -W117, -W116, -W0
         /*
         Method to update the payload for existing encounter
         */
-        function updateFormPayLoad(model, formly_schema, patient, form, uuid)
+        function updateFormPayLoad(model, formly_schema, patient, form, params)
         {
           /*
           The objective of this method is to create a payload with only updated
@@ -1202,10 +1202,10 @@ jshint -W106, -W052, -W098, -W003, -W068, -W004, -W033, -W030, -W117, -W116, -W0
                     init_data = getInitialFieldValue(key, section);
                     if (typeof init_data === 'object')
                     {
-                      if (init_data.init_val !== getFormattedValue(val[key]))
+                      if (init_data.init_val !== parseDate(val[key]))
                       {
                         //add property to the payload
-                        formPayLoad.encounterDatetime = getFormattedValue(val[key]);
+                        formPayLoad.encounterDatetime = parseDate(val[key]);
                       }
                     }
                   }
@@ -1433,11 +1433,15 @@ jshint -W106, -W052, -W098, -W003, -W068, -W004, -W033, -W030, -W117, -W116, -W0
             // console.log('Patient Selected', patient.uuid())
             formPayLoad['patient'] = patient.uuid();
             formPayLoad['encounterType'] = form.encounterType;
-            if(uuid !== undefined)
+            if(params.uuid !== undefined)
             {
               //encounter uuid for existing encounter
-              formPayLoad['uuid'] = uuid;
+              formPayLoad['uuid'] = params.uuid;
             }
+          }
+          
+          if(angular.isDefined(params.visitUuid)) {
+              formPayLoad['visit'] = params.visitUuid;
           }
           return formPayLoad;
         }
@@ -1635,7 +1639,7 @@ jshint -W106, -W052, -W098, -W003, -W068, -W004, -W033, -W030, -W117, -W116, -W0
                   field = {
                     key: sec_field.type,
                     type: 'datetimepicker',
-                    defaultValue: defaultValue_,
+                    defaultValue: parseDate(new Date()),
                     data: {encounter:'enc_' + sec_field.type},
                     templateOptions: {
                       type: 'text',
