@@ -40,6 +40,7 @@
     "karma-sinon": "^1.0.4",
     "load-grunt-tasks": "^3.1.0",
     "mocha": "^2.2.5",
+    "pre-git": "^3.3.0",
     "sinon": "^1.15.4",
     "time-grunt": "^1.0.0"
   },
@@ -47,6 +48,27 @@
     "node": ">=0.10.0"
   },
   "scripts": {
-    "test": "grunt test"
+    "test": "grunt test",
+    "commit": "commit-wizard"
+  },
+  "config": {
+    "pre-git": {
+      "commit-msg": [],
+      "pre-commit": [
+        "grunt jshint"
+      ],
+      "pre-push": [
+        "npm install",
+        "bower install",
+        "grunt build"
+      ],
+      "post-commit": [
+        "git status"
+      ],
+      "post-merge": [
+        "npm install",
+        "bower install"
+      ]
+    }
   }
 }
