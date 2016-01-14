@@ -386,7 +386,16 @@ module.exports = function (grunt) {
         configFile: 'test/karma.conf.js',
         singleRun: true
       }
-    }
+    },
+  
+    release: {
+        options: {
+          npm: false,
+          indentation: '\t', 
+          tagMessage: 'Tagging version <%= version %>', //default: 'Version <%= version %>',
+          additionalFiles: ['bower.json']
+        }
+    },
   });
 
 
