@@ -1,6 +1,6 @@
 {
   "name": "ngamrs",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "dependencies": {
     "api-check": "^7.5.0"
   },
@@ -58,9 +58,7 @@
   "config": {
     "pre-git": {
       "commit-msg": [],
-      "pre-commit": [
-        "grunt jshint"
-      ],
+      "pre-commit": [],
       "pre-push": [
         "npm install",
         "bower install",
