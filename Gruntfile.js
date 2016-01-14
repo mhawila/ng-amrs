@@ -400,7 +400,14 @@ module.exports = function (grunt) {
         singleRun: true
       }
     },
-  
+    
+    jsonprettify: {
+        options: {
+          space: '\t'
+        },
+        tools: { src: ['package.json', 'bower.json'] }
+    },
+    
     release: {
         options: {
           npm: false,
@@ -409,9 +416,118 @@ module.exports = function (grunt) {
           additionalFiles: ['bower.json']
         }
     },
+    
+    gitcommit: {
+        snapshot: {
+            options: {
+                message: 'Committing version change to SNAPSHOT version',
+                noVerify: false,
+                noStatus: false
+            },
+            files: {
+                src: ['package.json']
+            }
+        }
+    },
+    
+    gitpush: {
+        snapshot: {
+            options: {
+                remote: 'origin'
+            }
+        }
+    }
   });
 
-
+  grunt.registerTask('maintenance-branch', function() {
+      var npmProps = grunt.file.readJSON('package.json');
+      var versionParts = _splitVersionNumber(npmProps.version);
+      
+      var branch = versionParts.major + '.' + versionParts.minor + '.x';
+      
+      //Create the maintenance branch.      
+      grunt.log.writeln('Creating maintenance branch => ', branch);
+      
+      //Make native calls 
+      var exec = require('sync-exec');
+  
+      var ret = exec('git branch ' + branch);
+      grunt.log.writeln(ret.stdout);
+      grunt.log.errorlns(ret.stderr);
+      
+      if(ret.status === 0) {
+          grunt.log.writeln('Setting ', branch, ' to track upstream/', branch);
+          ret = exec('git branch --set-upstream-to=origin/' + branch + ' ' + branch);
+          grunt.log.writeln(ret.stdout);
+          grunt.log.errorlns(ret.stderr);
+      }
+      
+      grunt.log.write(exec('git status').stdout);
+  });
+  
+  grunt.registerTask('snapshot', function(target) {
+      //Here we update the master to snapshot version.
+      var npmProps = grunt.file.readJSON('package.json');
+      
+      var vParts = _splitVersionNumber(npmProps.version);
+      var minor = Number(vParts.minor);
+      var patch = 0;
+      if(target === 'minor') {
+          minor++;
+      } else {  //Patch version is to be upgraded
+          if(!isNaN(vParts.patch)) {
+              patch++;
+          } else {
+              // Try to get the initial part.
+              var i=0;
+              var num = '';
+              while(i < vParts.patch.length) {
+                  if(isNaN(vParts.patch[i])){
+                      break;
+                  }
+                  num = num.concat(vParts.patch[i]);
+                  i++;
+              }
+              patch = num.length>0 ? Number(num)+1 : 0;
+          }
+      }
+      var snapshotVersion = vParts.major + '.' + minor + '.' + patch + '-SNAPSHOT';
+      
+      //Store it in config params for commit message
+      grunt.config('snapshot.version', snapshotVersion);
+      
+      npmProps.version = snapshotVersion;
+      grunt.file.write('package.json', JSON.stringify(npmProps));
+      grunt.task.run(['jsonprettify']);
+      
+      //Commit the changes & push to remote
+      grunt.task.run(['gitcommit:snapshot', 'gitpush:snapshot']);
+  });
+  
+  grunt.registerTask('release-prepare', function(target) {
+      // release
+      if(target) {
+          grunt.task.run('release:'+target);
+      } else {
+          grunt.task.run('release');
+      }
+      
+      // build
+      grunt.task.run('build');
+      
+      // Create maintenance branch if minor or major 
+      if(target === 'major' || target === 'minor') {
+          grunt.task.run('maintenance-branch');
+      }
+      
+      // Update versions to snapshot.
+      if(target === 'major' || target === 'minor') { //Both update minor version
+          grunt.task.run('snapshot:minor');
+      } else {
+          grunt.task.run('snapshot');
+      } 
+  });
+       
   grunt.registerTask('serve', 'Compile then start a connect web server', function (target) {
     if (target === 'dist') {
       return grunt.task.run(['build', 'connect:dist:keepalive']);
