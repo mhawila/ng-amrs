@@ -492,15 +492,10 @@ module.exports = function (grunt) {
           }
       }
       var snapshotVersion = vParts.major + '.' + minor + '.' + patch + '-SNAPSHOT';
-      
-      //Store it in config params for commit message
-      grunt.config('snapshot.version', snapshotVersion);
-      
-      npmProps.version = snapshotVersion;
-      
+
       //Update package.json & bower.json
-      var bower = grunt.file.readJSON();
-      bower.version = snapshotVersion;
+      var bower = grunt.file.readJSON('bower.json');
+      bower.version = npmProps.version = snapshotVersion;
       grunt.file.write('package.json', JSON.stringify(npmProps, null, 2));
       grunt.file.write('bower.json', JSON.stringify(bower, null, 2));
     //   grunt.task.run(['jsonprettify']);
