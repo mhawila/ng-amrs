@@ -457,7 +457,7 @@ module.exports = function (grunt) {
       
       if(ret.status === 0) {
           grunt.log.writeln('Setting ', branch, ' to track upstream/', branch);
-          ret = exec('git branch --set-upstream-to=origin/' + branch + ' ' + branch);
+          ret = exec('git push -u origin ' + branch);
           grunt.log.writeln(ret.stdout);
           grunt.log.errorlns(ret.stderr);
       }
@@ -497,8 +497,13 @@ module.exports = function (grunt) {
       grunt.config('snapshot.version', snapshotVersion);
       
       npmProps.version = snapshotVersion;
-      grunt.file.write('package.json', JSON.stringify(npmProps));
-      grunt.task.run(['jsonprettify']);
+      
+      //Update package.json & bower.json
+      var bower = grunt.file.readJSON();
+      bower.version = snapshotVersion;
+      grunt.file.write('package.json', JSON.stringify(npmProps, null, 2));
+      grunt.file.write('bower.json', JSON.stringify(bower, null, 2));
+    //   grunt.task.run(['jsonprettify']);
       
       //Commit the changes & push to remote
       grunt.task.run(['gitcommit:snapshot', 'gitpush:snapshot']);
