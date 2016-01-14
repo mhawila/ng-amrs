@@ -425,7 +425,7 @@ module.exports = function (grunt) {
                 noStatus: false
             },
             files: {
-                src: ['package.json']
+                src: ['package.json', 'bower.json']
             }
         }
     },
@@ -439,7 +439,8 @@ module.exports = function (grunt) {
     }
   });
 
-  grunt.registerTask('maintenance-branch', function() {
+  grunt.registerTask('maintenance-branch', function(upstream) {
+      var upstream = upstream || 'upstream';
       var npmProps = grunt.file.readJSON('package.json');
       var versionParts = _splitVersionNumber(npmProps.version);
       
@@ -452,14 +453,15 @@ module.exports = function (grunt) {
       var exec = require('sync-exec');
   
       var ret = exec('git branch ' + branch);
-      grunt.log.writeln(ret.stdout);
-      grunt.log.errorlns(ret.stderr);
+      if(ret.stdout !== '') grunt.log.writeln(ret.stdout);
+      if(ret.stderr !== '') grunt.log.errorlns(ret.stderr);
       
       if(ret.status === 0) {
-          grunt.log.writeln('Setting ', branch, ' to track upstream/', branch);
-          ret = exec('git push -u origin ' + branch);
-          grunt.log.writeln(ret.stdout);
-          grunt.log.errorlns(ret.stderr);
+          grunt.log.writeln('Setting ' + branch + ' to track '+ upstream 
+                            + '/' + branch);
+          ret = exec('git push -u ' + upstream + ' ' + branch);
+          if(ret.stdout !== '') grunt.log.writeln(ret.stdout);
+          if(ret.stderr !== '') grunt.log.errorlns(ret.stderr);
       }
       
       grunt.log.write(exec('git status').stdout);
@@ -517,7 +519,7 @@ module.exports = function (grunt) {
       
       // Create maintenance branch if minor or major 
       if(target === 'major' || target === 'minor') {
-          grunt.task.run('maintenance-branch');
+          grunt.task.run('maintenance-branch:origin');
       }
       
       // Update versions to snapshot.
