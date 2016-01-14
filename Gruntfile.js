@@ -23,7 +23,7 @@ module.exports = function (grunt) {
 
   // Define the configuration for all the tasks
   grunt.initConfig({
-
+    bower: grunt.file.readJSON('bower.json'),
     // Project settings
     yeoman: appConfig,
 
@@ -205,7 +205,7 @@ module.exports = function (grunt) {
         src: [
           '<%= yeoman.dist %>/scripts/{,*/}*.js',
           '<%= yeoman.dist %>/styles/{,*/}*.css',
-          '<%= yeoman.dist %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}',
+          // '<%= yeoman.dist %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}',
           '<%= yeoman.dist %>/styles/fonts/*'
         ]
       }
@@ -243,31 +243,12 @@ module.exports = function (grunt) {
       }
     },
 
-    // The following *-min tasks will produce minified files in the dist folder
-    // By default, your `index.html`'s <!-- Usemin block --> will take care of
-    // minification. These next options are pre-configured if you do not wish
-    // to use the Usemin blocks.
-    // cssmin: {
-    //   dist: {
-    //     files: {
-    //       '<%= yeoman.dist %>/styles/main.css': [
-    //         '.tmp/styles/{,*/}*.css'
-    //       ]
-    //     }
-    //   }
-    // },
-    // uglify: {
-    //   dist: {
-    //     files: {
-    //       '<%= yeoman.dist %>/scripts/scripts.js': [
-    //         '<%= yeoman.dist %>/scripts/scripts.js'
-    //       ]
-    //     }
-    //   }
-    // },
-    // concat: {
-    //   dist: {}
-    // },
+    uglify: {
+      // Uses preparations done by useminPrepare
+      options: {
+        mangle: false
+      }
+    },
 
     imagemin: {
       dist: {
@@ -322,13 +303,6 @@ module.exports = function (grunt) {
       }
     },
 
-    // Replace Google CDN references
-    cdnify: {
-      dist: {
-        html: ['<%= yeoman.dist %>/*.html']
-      }
-    },
-
     // Copies remaining files to places other tasks can use
     copy: {
       dist: {
@@ -341,11 +315,20 @@ module.exports = function (grunt) {
             '*.{ico,png,txt}',
             '.htaccess',
             '*.html',
+            'version.json',
             'views/{,*/}*.html',
             'images/{,*/}*.{webp}',
-            'styles/fonts/{,*/}*.*'
+            'styles/fonts/{,*/}*.*',
+            'styles/medical-icons/{,*/}*.*',
+            '!styles/medical-icons/fonts/*'
           ]
         }, {
+          // FIXME: Very specific section for medical fonts, may need to refactor
+          expand: true,
+          cwd: '<%= yeoman.app %>/styles/medical-icons',
+          dest: '<%= yeoman.dist %>/styles',
+          src: ['fonts/*']
+        },  {
           expand: true,
           cwd: '.tmp/images',
           dest: '<%= yeoman.dist %>/images',
@@ -357,12 +340,42 @@ module.exports = function (grunt) {
           dest: '<%= yeoman.dist %>'
         }]
       },
+      json: {
+        files: [{
+            expand: true,
+            cwd: '<%= yeoman.app %>/scripts/formentry/formschema',
+            src: '*.json',
+            dest: '<%= yeoman.dist %>/scripts/formentry/formschema'
+          }]
+      },
       styles: {
         expand: true,
         cwd: '<%= yeoman.app %>/styles',
         dest: '.tmp/styles/',
         src: '{,*/}*.css'
       }
+    },
+
+    revision: {
+        options: {
+          property: 'meta.revision',
+          ref: 'HEAD',
+          short: true
+        }
+    },
+
+    'file-creator': {
+        'tag-revision': {
+          'app/version.json': function(fs, fd, done) {
+            grunt.task.requires('revision');
+            fs.writeSync(fd, JSON.stringify({
+                version: grunt.config('bower.version'),
+                revision: grunt.config('meta.revision'),
+                date: grunt.template.today()
+            }));
+            done();
+          }
+        }
     },
 
     // Run some tasks in parallel to speed up the build process
@@ -406,17 +419,13 @@ module.exports = function (grunt) {
 
     grunt.task.run([
       'clean:server',
+      'version',
       'wiredep',
       'concurrent:server',
       'autoprefixer:server',
       'connect:livereload',
       'watch'
     ]);
-  });
-
-  grunt.registerTask('server', 'DEPRECATED TASK. Use the "serve" task instead', function (target) {
-    grunt.log.warn('The `server` task has been deprecated. Use `grunt serve` to start a server.');
-    grunt.task.run(['serve:' + target]);
   });
 
   grunt.registerTask('test', [
@@ -428,8 +437,13 @@ module.exports = function (grunt) {
     'karma'
   ]);
 
+  grunt.registerTask('version', 'Update the build number', function() {
+     grunt.task.run(['revision', 'file-creator']);
+  });
+
   grunt.registerTask('build', [
     'clean:dist',
+    'version',
     'wiredep',
     'useminPrepare',
     'concurrent:dist',
@@ -437,12 +451,12 @@ module.exports = function (grunt) {
     'concat',
     'ngAnnotate',
     'copy:dist',
-    'cdnify',
     'cssmin',
     'uglify',
     'filerev',
     'usemin',
-    'htmlmin'
+    'htmlmin',
+    'copy:json'
   ]);
 
   grunt.registerTask('default', [

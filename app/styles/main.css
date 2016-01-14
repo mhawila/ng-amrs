@@ -6,10 +6,22 @@
 }
 
 html, body {
-  padding: 0;
-  padding-top: 29px;
-  height: 95%;
-  min-height: 95%;
+  height: 100%;
+}
+
+
+.navbar-fixed-bottom{
+    height: 30px; /* must not use percents here, must be 60px*/
+}
+
+#main-content {
+    position: fixed;
+    display: block;
+    top: 54px;
+    bottom: 54px;
+    left: 0;
+    right: 0;
+    overflow:auto;
 }
 
 /* Everything but the jumbotron gets side spacing for mobile first views */
@@ -35,10 +47,29 @@ html, body {
 
 /* Custom page footer */
 .footer {
-  padding-top: 19px;
+  /* padding-top: 7px; */
   color: #777;
   border-top: 1px solid #e5e5e5;
 }
+
+#form-panel {
+   font-size: 20px;
+   line-height: 1.5;
+}
+
+#form-panel .checkbox-inline, #form-panel .checkbox{
+  line-height: 1.1;
+  font-size: 20px;
+  margin-top: 15px;
+  margin-bottom: 10px;
+}
+
+.form-list-item {
+  font-size: large;
+  margin-top: 15px;
+}
+
+
 
 .container-narrow > hr {
   margin: 30px 0;
@@ -62,22 +93,23 @@ html, body {
   margin-top: 28px;
 }
 
-  /* main content is the container between header and footer */
-  #main-content{
-    min-height: 100%;
-    height: 100%;
-  }
-  
-  #patient-dashboard{
-    min-height: 100%;
-    height: auto;
-    
-  }
-  
+ .markDeceased {
+      color: red;
+ }
+
   .show-me{
     border-color: red;
     border-width: 2px;
   }
+
+  .fade {
+opacity: 0;
+-webkit-transition: opacity 1s linear;
+  -moz-transition: opacity 1s linear;
+   -ms-transition: opacity 1s linear;
+	-o-transition: opacity 1s linear;
+	   transition: opacity 1s linear;
+}
 
 /* Responsive: Portrait tablets and up */
 @media screen and (min-width: 768px) {
@@ -100,6 +132,147 @@ html, body {
   .jumbotron {
     border-bottom: 0;
   }
-  
 
+
+}
+
+/* when hiding the thing */
+.ng-hide-add.animate-hide {
+  -webkit-animation:0.2s lightSpeedOut ease;
+  animation:0.2s lightSpeedOut ease;
+}
+
+/* when showing the thing */
+.ng-hide-remove.animate-show {
+  -webkit-animation:0.5s flipInX ease;
+  animation:0.5s flipInX ease;
+}
+
+/* ANIMATIONS (FROM ANIMATE.CSS) */
+
+/* flip in */
+@-webkit-keyframes flipInX {
+  0% {
+    -webkit-transform: perspective(400px) rotate3d(1, 0, 0, 90deg);
+    transform: perspective(400px) rotate3d(1, 0, 0, 90deg);
+    -webkit-transition-timing-function: ease-in;
+    transition-timing-function: ease-in;
+    opacity: 0;
+  }
+
+  40% {
+    -webkit-transform: perspective(400px) rotate3d(1, 0, 0, -20deg);
+    transform: perspective(400px) rotate3d(1, 0, 0, -20deg);
+    -webkit-transition-timing-function: ease-in;
+    transition-timing-function: ease-in;
+  }
+
+  60% {
+    -webkit-transform: perspective(400px) rotate3d(1, 0, 0, 10deg);
+    transform: perspective(400px) rotate3d(1, 0, 0, 10deg);
+    opacity: 1;
+  }
+
+  80% {
+    -webkit-transform: perspective(400px) rotate3d(1, 0, 0, -5deg);
+    transform: perspective(400px) rotate3d(1, 0, 0, -5deg);
+  }
+
+  100% {
+    -webkit-transform: perspective(400px);
+    transform: perspective(400px);
+  }
+}
+
+@keyframes flipInX {
+  0% {
+    -webkit-transform: perspective(400px) rotate3d(1, 0, 0, 90deg);
+    -ms-transform: perspective(400px) rotate3d(1, 0, 0, 90deg);
+    transform: perspective(400px) rotate3d(1, 0, 0, 90deg);
+    -webkit-transition-timing-function: ease-in;
+    transition-timing-function: ease-in;
+    opacity: 0;
+  }
+
+  40% {
+    -webkit-transform: perspective(400px) rotate3d(1, 0, 0, -20deg);
+    -ms-transform: perspective(400px) rotate3d(1, 0, 0, -20deg);
+    transform: perspective(400px) rotate3d(1, 0, 0, -20deg);
+    -webkit-transition-timing-function: ease-in;
+    transition-timing-function: ease-in;
+  }
+
+  60% {
+    -webkit-transform: perspective(400px) rotate3d(1, 0, 0, 10deg);
+    -ms-transform: perspective(400px) rotate3d(1, 0, 0, 10deg);
+    transform: perspective(400px) rotate3d(1, 0, 0, 10deg);
+    opacity: 1;
+  }
+
+  80% {
+    -webkit-transform: perspective(400px) rotate3d(1, 0, 0, -5deg);
+    -ms-transform: perspective(400px) rotate3d(1, 0, 0, -5deg);
+    transform: perspective(400px) rotate3d(1, 0, 0, -5deg);
+  }
+
+  100% {
+    -webkit-transform: perspective(400px);
+    -ms-transform: perspective(400px);
+    transform: perspective(400px);
+  }
+}
+
+/* light speed out */
+@-webkit-keyframes lightSpeedOut {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    -webkit-transform: translate3d(100%, 0, 0) skewX(30deg);
+    transform: translate3d(100%, 0, 0) skewX(30deg);
+    opacity: 0;
+  }
+}
+
+@keyframes lightSpeedOut {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    -webkit-transform: translate3d(100%, 0, 0) skewX(30deg);
+    -ms-transform: translate3d(100%, 0, 0) skewX(30deg);
+    transform: translate3d(100%, 0, 0) skewX(30deg);
+    opacity: 0;
+  }
+}
+.label-warning {
+    color: #8a6d3b;
+}
+.pvtUi{
+width:100%}
+.list-group-horizontal .list-group-item {
+    display: inline-block;
+}
+.list-group-horizontal .list-group-item {
+	margin-bottom: 0;
+	margin-left:-4px;
+	margin-right: 0;
+}
+.list-group-horizontal .list-group-item:first-child {
+	border-top-right-radius:0;
+	border-bottom-left-radius:4px;
+}
+.list-group-horizontal .list-group-item:last-child {
+	border-top-right-radius:4px;
+	border-bottom-left-radius:0;
+}
+.bst-table-min-width{
+  min-width: 250px;
+  width:250px;
+}
+.bst-table-min-width-mid{
+  min-width: 200px;
+  width: 200px;
 }

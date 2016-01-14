@@ -20,29 +20,48 @@ jshint -W003, -W026
         return directive;
     }
     
-    hivSummaryController.$inject = ['$scope', 'EtlRestService', 'HivSummaryModel'];
+    hivSummaryController.$inject = ['$scope', '$rootScope', 'EtlRestService', 'HivSummaryModel'];
     
-    function hivSummaryController(scope, EtlRestService, HivSummaryModel) {
+    function hivSummaryController(scope, $rootScope, EtlRestService, HivSummaryModel) {
         var vm = this;
         scope.hivSummary = {};
         
-        scope.hasSummary = false;
+        scope.hasSummary = true;
+        scope.experiencedLoadingError = false;
+        scope.isBusy = false;
+        scope.showingHistoricalSummary = false;
+        scope.openHistoricalSection = openHistoricalSection;
         
-        vm.fetchHivSummary = function(patientUuid) {
-            scope.hasSummary = false;
+        scope.fetchHivSummary = function(patientUuid) {
+            scope.hivSummary = {};
+            scope.hasSummary = true;
+            scope.experiencedLoadingError = false;
+            scope.isBusy = true;
             EtlRestService.getHivSummary(patientUuid, undefined, undefined, onFetchHivSummarySuccess, onFetchHivSummaryFailed);
         }
         
         function onFetchHivSummarySuccess(hivData) {
             if(hivData.result[0])
                 scope.hasSummary = true;
+            else
+                scope.hasSummary = false;
                 
-            scope.hivSummary = new HivSummaryModel.hivSummary(hivData.result[0]);
+            scope.isBusy = false;
+             
+            if(hivData.result[0])  
+                scope.hivSummary = new HivSummaryModel.hivSummary(hivData.result[0]);
         }
         
         function onFetchHivSummaryFailed(error) {
-            scope.hasSummary = false;
+            scope.hasSummary = true;
+            scope.experiencedLoadingError = true;
+            scope.isBusy = false;
             scope.hivSummary = {};
+        }
+        
+        function openHistoricalSection() {
+            $rootScope.$broadcast('viewHivHistoricalSummary', null);
+            scope.showingHistoricalSummary = true;
         }
     }
 
@@ -51,7 +70,7 @@ jshint -W003, -W026
 
         function onPatientUuidChanged(newVal, oldVal) {
             if (newVal && newVal != "") {
-                vm.fetchHivSummary(newVal);
+                scope.fetchHivSummary(newVal);
             }
         }
     }

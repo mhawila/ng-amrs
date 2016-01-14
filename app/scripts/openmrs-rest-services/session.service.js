@@ -15,12 +15,12 @@
           getResource:getResource,
           getSession:getSession,
           currentSession:currentSession,
-          logout:logout
+          deleteSession:deleteSession
         };
         return serviceDefinition;
 
         function getResource() {
-          return $resource(OpenmrsSettings.getCurrentRestUrlBase() + 'session');
+          return $resource(OpenmrsSettings.getCurrentRestUrlBase().trim() + 'session');
         }
 
         function getSession(successCallback, failedCallback) {
@@ -37,7 +37,7 @@
           });
         }
 
-        function logout(callback) {
+        function deleteSession(callback) {
           var resource = getResource();
           return resource.delete({}).$promise
           .then(function(response) {

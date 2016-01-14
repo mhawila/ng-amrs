@@ -1,37 +1,48 @@
 /*
-jshint -W003, -W026
+jshint -W003, -W026, -W033, -W098
 */
-(function() {
-'use strict';
+(function () {
+    'use strict';
 
-angular
+    angular
         .module('app.patientdashboard')
         .directive('patientDemographics', patientDemographics);
 
-function patientDemographics() {
-      var patientDemographicsDefinition = {
-        restrict: 'EA',
-        templateUrl: 'views/patient-dashboard/patient-demographics.html',
-        scope: {
-          patientuuids: '='
-        },
-        controller: PatientDemographicsCtrl
-      };
+    function patientDemographics() {
+        var patientDemographicsDefinition = {
+            restrict: 'EA',
+            templateUrl: 'views/patient-dashboard/patient-demographics.html',
+            controller: PatientDemographicsCtrl
+        };
 
-      return patientDemographicsDefinition;
+        return patientDemographicsDefinition;
     }
 
-PatientDemographicsCtrl.$inject = ['$scope', '$stateParams', 'OpenmrsRestService'];
+    PatientDemographicsCtrl.$inject = ['$rootScope', '$scope', '$stateParams', 'OpenmrsRestService'];
 
-function PatientDemographicsCtrl(scope, $stateParams,  OpenmrsRestService) {
-     var patient=OpenmrsRestService.getPatientService().getPatientByUuid({uuid:$stateParams.uuid},function (data) {
-       scope.patient = data;
-       scope.personAttributes=data.getPersonAttributes();
+    function PatientDemographicsCtrl($rootScope, scope, $stateParams, OpenmrsRestService) {
+        /*
+        Avoid the round trip and use the rootScope patient selected during
+        search process
+        */
+        //handle the case for unloaded patient
+        if (!$rootScope.broadcastPatient.getPersonAttributes) {
+            var patient = OpenmrsRestService.getPatientService().getPatientByUuid({ uuid: $stateParams.uuid },
+                function (data) {
+                    scope.patient = data;
+                    scope.personAttributes = data.getPersonAttributes();
 
-     }
+                }
 
-    ) ;
+                );
+        }
+        else {
+            scope.patient = $rootScope.broadcastPatient;
+            scope.personAttributes = scope.patient.getPersonAttributes();
+        }
 
 
-}
+
+
+    }
 })();

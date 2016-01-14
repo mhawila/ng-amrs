@@ -3,41 +3,68 @@
 
   angular
     .module('app.patientdashboard')
-    .controller('EncounterCtrl', EncounterCtrl)
+    .controller('EncounterCtrl', EncounterCtrl);
 
   EncounterCtrl.$inject = [
-                        '$scope',
-                        '$stateParams',
-                        '$timeout',
-                        'EncounterResService'
-                      ]
+    '$stateParams',
+    '$timeout',
+    'EncounterResService',
+    'EncounterModel',
+    '$location',
+    '$rootScope'
+  ];
 
-  function EncounterCtrl($scope, $stateParams, $timeout, EncounterResService) {
+  function EncounterCtrl($stateParams, $timeout, EncounterResService,
+                         EncounterModel, $location, $rootScope) {
     var vm = this;
     vm.encounterList = [];
-    vm.status = {};
     vm.selectedEncounter = null;
+    vm.experiencedLoadingError = false;
+    vm.isBusy = true;
+    vm.hasEncounters = false;
+    //Pagination Variables
+    vm.currentPage = 1;
+    vm.entryLimit = 10;
+    vm.totalItems=0;
+    vm.noOfPages=0;
     vm.setSelected = function(encounter) {
       vm.selectedEncounter = encounter;
+
+    }
+
+    vm.loadEncounterForm = function(EncounterModel) {
+      $rootScope.activeEncounter = EncounterModel;
+      $location.path('/encounter/' + EncounterModel.uuid() + '/patient/' +
+        EncounterModel.patientUuid());
+    }
+
+    vm.showNoEncounters = function() {
+      return !vm.isBusy && !vm.experiencedLoadingError && !vm.hasEncounters;
     }
 
     $timeout(function(){
       var params = {
-        patientUuid: $stateParams.uuid,
-        rep: 'full'
+        patientUuid: $stateParams.uuid
       }
-      EncounterResService.getPatientEncounters(params, function(data) {
-        vm.encounterList = data;
-        vm.status = {
-          isOpen: new Array(vm.encounterList.length)
-        }
-
-        for (var i = 0; i < vm.status.isOpen.length; i++) {
-          vm.status.isOpen[i] = (i === 0);
-        }
-      }, function(error) {
-          console.error('An error ' + error +' occured');
-      })
+      vm.experiencedLoadingError = false;
+      EncounterResService.getPatientEncounters(params, onLoadEncountersSuccess,
+        onLoadEncountersError);
     }, 1000);
+
+    function onLoadEncountersSuccess(data) {
+      vm.isBusy = false;
+      vm.encounterList = EncounterModel.toArrayOfModels(data);
+      vm.hasEncounters = vm.encounterList.length > 0 ? true : false;
+      vm.totalItems =  vm.encounterList.length;
+      vm.noOfPages = Math.ceil(vm.totalItems / vm.entryLimit);
+
+    }
+
+    function onLoadEncountersError(error) {
+      vm.isBusy = false;
+      vm.experiencedLoadingError = true;
+      console.error('Error: EncounterController An error' + error +
+        'occured while loading');
+    }
   }
-})()
+})();

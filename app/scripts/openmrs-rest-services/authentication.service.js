@@ -1,17 +1,22 @@
 /*jshint -W003, -W117, -W098, -W026 */
+/*jscs:disable safeContextKeyword, requireDotNotation, requirePaddingNewLinesBeforeLineComments, requireTrailingComma*/
 (function() {
   'use strict';
 
   angular
-        .module('app.openmrsRestServices')
-        .factory('AuthService', AuthService);
+    .module('app.openmrsRestServices')
+    .factory('AuthService', AuthService);
 
-  AuthService.$inject = ['$base64', '$http', 'SessionResService', '$state', 'SessionModel', '$rootScope'];
+  AuthService.$inject = ['$base64', '$http', 'SessionResService', '$state',
+    'SessionModel', '$rootScope', 'LocationResService', 'FormResService', 'UserDefaultPropertiesService'
+  ];
 
-  function AuthService(base64, $http, session, $state, SessionModel, $rootScope) {
+  function AuthService(base64, $http, session, $state, SessionModel,
+    $rootScope, LocationResService, FormResService, UserDefaultPropertiesService) {
     var service = {
       isAuthenticated: isAuthenticated,
       setCredentials: setCredentials,
+      logOut: logOut,
       clearCredentials: clearCredentials,
       authenticated: false
     };
@@ -22,36 +27,71 @@
       //authenticate user
       setCredentials(CurrentUser);
       session.getSession(function(data) {
-        //console.log(data);
-        var session = new SessionModel.session(data.sessionId, data.authenticated);
-        service.authenticated = session.isAuthenticated();
-        if (service.authenticated)
-        {
-          console.log('routing to the right page');
-          //$location.path('/'); //go to the home page if user is authenticated or
-          $state.go('home');
+          //console.log(data);
+          var session = new SessionModel.session(data.sessionId, data.authenticated);
+          service.authenticated = session.isAuthenticated();
+          if (service.authenticated) {
+            //find out if the user has set the default location
+            UserDefaultPropertiesService.setAuthenticatedUser(CurrentUser.username);
+            var userDefaultLocation = UserDefaultPropertiesService.getCurrentUserDefaultLocation();
+            LocationResService.getLocations(function(results) {
+                $rootScope.cachedLocations = results;
+              },
 
+              function(failedError) {
+                console.log(failedError);
+              });
+            console.log('routing to the right page');
+            if (angular.isDefined(userDefaultLocation)) {
+              //$location.path('/'); //go to the home page if user is authenticated and has defined default location
+              $state.go('patientsearch');
+              //broadcast the aunthenticated user location
+              $rootScope.$broadcast('defaultUserLocationBroadcast', userDefaultLocation);
+            } else {
+              //Allow user to set the default location
+              $state.go('user-default-properties');
+            }
 
+            //cache forms
+            var findFormsContaining = 'POC';
+            FormResService.findPocForms(findFormsContaining, function(forms) {
+                $rootScope.cachedPocForms = forms;
+              },
 
-          //console.log('Resolved View');
-          //console.log($state.go('home'));
-        }
-        else{
+              function(error) {
+                console.log(error);
+              });
 
-        }
+            // SearchDataService.findPocForms(findFormsContaining, function(results) {
+            //  $rootScope.cachedPocForms = results;
+            //  }, function(error){
+            //   console.log(error);
+            // });
 
-        $rootScope.$broadcast('onUserAuthenticationDetermined');
+          } else {
+            console.log('authentication Failed');
+          }
 
-        callback(data.authenticated); //return authentication status (true/false)
+          $rootScope.$broadcast('onUserAuthenticationDetermined');
+          callback(data.authenticated); //return authentication status (true/false)
 
-        //console.log(service.authenticated);
-      },
+          //console.log(service.authenticated);
+        },
 
-      function(error) {
-        console.log(error);
-        callback(error);
-      });
+        function(error) {
+          console.log(error);
+          callback(error);
+        });
 
+    }
+
+    function logOut() {
+      session.deleteSession(function() {});
+
+      clearCredentials();
+      service.authenticated = false;
+      $rootScope.$broadcast('onUserLoggedOut');
+      $state.go('login');
     }
 
     function setCredentials(CurrentUser) {

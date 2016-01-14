@@ -1,5 +1,5 @@
 /*
-jshint -W106, -W098, -W003, -W068, -W004, -W033, -W030, -W117, -W116, -W069, -W026
+jshint -W106, -W098, -W109, -W003, -W068, -W004, -W033, -W030, -W117, -W116, -W069, -W026
 */
 (function () {
 
@@ -12,7 +12,7 @@ jshint -W106, -W098, -W003, -W068, -W004, -W033, -W030, -W117, -W116, -W069, -W0
     mod.run(function (formlyConfig) {
         formlyConfig.setType({
             name: 'ui-select-extended',
-            wrapper: ['bootstrapLabel'],
+            wrapper: ['bootstrapLabel','bootstrapHasError','validation'],
             template: '<ui-select ng-model="model[options.key]" theme="bootstrap" ng-required="{{to.required}}" ng-disabled="{{to.disabled}}" reset-search-input="false"> <ui-select-match placeholder="{{to.placeholder}}"> {{evaluateFunction($select.selected[to.labelProp || \'name\'])}} </ui-select-match> <ui-select-choices refresh="refreshItemSource($select.search)" group-by="to.groupBy" repeat="(evaluateFunction(option[to.valueProp || \'value\'])) as option in itemSource" > <div ng-bind-html="evaluateFunction(option[to.labelProp || \'name\']) | highlight: $select.search"></div> </ui-select-choices> </ui-select>',
             link: function (scope, el, attrs, vm) {
                 //incase we need link function
@@ -23,7 +23,7 @@ jshint -W106, -W098, -W003, -W068, -W004, -W033, -W030, -W117, -W116, -W069, -W0
                 $scope.refreshItemSource = refreshItemSource;
                 $scope.evaluateFunction = evaluateFunction;
                 vm.getSelectedObject = getSelectedObject;
-                
+
                 $scope.$watch(
                 function(scope){
                     return evaluateFunction(scope.model[scope.options.key]);
@@ -43,7 +43,7 @@ jshint -W106, -W098, -W003, -W068, -W004, -W033, -W030, -W117, -W116, -W069, -W0
 
                 function getSelectedObject() {
                     var selectedValue = typeof $scope.model[$scope.options.key] === 'function' ? $scope.model[$scope.options.key]() : $scope.model[$scope.options.key];
-                    if (selectedValue !== undefined && selectedValue !== null)
+                    if (selectedValue !== undefined && selectedValue !== null && selectedValue !== '')
                         $scope.to.getSelectedObjectFunction(selectedValue,
                             function (object) {
                                 $scope.itemSource = [object];

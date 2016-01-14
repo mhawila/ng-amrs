@@ -1,54 +1,46 @@
 /*
 jshint -W098, -W026, -W003, -W068, -W004, -W033, -W030, -W117, -W116, -W069
 */
+/*
+jscs:disable disallowQuotedKeysInObjects, safeContextKeyword, requireDotNotation, requirePaddingNewLinesBeforeLineComments, requireTrailingComma
+*/
 (function() {
-    'use strict';
+  'use strict';
 
-    angular
+  angular
         .module('app.formentry')
         .factory('FormsMetaData', FormsMetaData);
 
-    FormsMetaData.$inject = [];
+  FormsMetaData.$inject = ['CachedDataService'];
 
-    function FormsMetaData() {
+  function FormsMetaData(CachedDataService) {
 
-        var forms = {};
-        forms['form1'] = {
-          name: 'form1',
-          uuid: 'form1',
-          encounterType:'8d5b2be0-c2cc-11de-8d13-0010c6dffd0f'
-        };
+    var forms = {};
+    var  defaultForm = {
+           name: 'ampath_poc_adult_return_visit_form_v0.01',
+           uuid: '1339a535-e38f-44cd-8cf8-f42f7c5f2ab7',
+           encounterType:'8d5b2be0-c2cc-11de-8d13-0010c6dffd0f',
+           encounterTypeName:'ADULT RETURN'
+         };
 
-        forms['form2'] = {
-          name: 'test',
-          uuid: 'xxx',
-          encounterType:'yyy'
-        };
+    forms = CachedDataService.getCachedPocForms();
+    var service = {
+      getForm: getForm
+    };
 
-        forms['form3'] = {
-          name: 'test',
-          uuid: 'xxx',
-          encounterType:'yyy'
-        };
+    return service;
 
-        var service = {
-            getForm: getForm
-        };
+    function getForm(uuid) {
 
-        return service;
-
-
-        function getForm(uuid) {
-          //console.log('Available forms');
-          //console.log(forms);
-        var result =  _.find(forms,function(form) {
+      var result =  _.find(forms, function(form) {
             //console.log(form)
             if (form.uuid === uuid) return form;
-            else if (form.encounterType === uuid) return form;
+            else if (form.encounterTypeUuid === uuid) return form;
             else if (form.name === uuid) return form;
           });
 
-          return result;
-        }
+      if (result === undefined) return defaultForm;
+      return result;
     }
+  }
 })();

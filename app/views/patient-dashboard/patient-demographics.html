@@ -1,15 +1,14 @@
-<div ng-if="personAttributes[0]">
-   <h4><b>Person Attributes</b></h4>
-     <div ng-repeat="attribute in personAttributes">
-            <small>{{ attribute.name }}:{{ attribute.value }}</small>
-      </div>
-  </div>
+<ul class="list-group">
+    <li class="list-group-item" style="font-size:large" ng-if="patient.fullNames()">Name: {{patient.fullNames() | titlecase }}</li>
+    <li class="list-group-item" style="font-size:large" ng-if="patient.healthCenter()">Health Center: {{patient.healthCenter()}}</li>
+    <li class="list-group-item" style="font-size:large" ng-if="patient.isTestorFakePatient()">Test Patient</li>
+    <li class="list-group-item markDeceased" style="font-size:large" ng-if="patient.deathDate()">Death Date: {{patient.deathDate()}}</li>
+    <li class="list-group-item" style="font-size:large" ng-if="patient.phoneNumber()">Phone Number: {{patient.phoneNumber()}}</li>
+    <li class="list-group-item" style="font-size:large" ng-if="patient.address().county">County: {{patient.address().county| titlecase }}</li>
+    <li class="list-group-item" style="font-size:large" ng-if="patient.address().subCounty">Sub-County: {{patient.address().subCounty| titlecase }}</li>
+    <li class="list-group-item" style="font-size:large" ng-if="patient.address().estateLandmark">Estate/Landmark: {{patient.address().estateLandmark| titlecase }}</li>
+    <li class="list-group-item" style="font-size:large" ng-if="patient.address().townVillage">Town/Village: {{patient.address().townVillage| titlecase }}</li>
+    <li class="list-group-item" style="font-size:large" ng-if="patient.address().stateProvince">State/Province: {{patient.address().stateProvince| titlecase }}</li>
 
-  <div ng-if="patient.address().noAddress!='None'">
-    <h5><b>Person Address</b></h5>
-       <div ng-repeat="(key,value) in patient.address()">
-         <div ng-if="value">
-                  <small>{{key}} :  {{value}}</small>
-          <div>
-       </div>
-    </div>
+  </li>
+</ul>

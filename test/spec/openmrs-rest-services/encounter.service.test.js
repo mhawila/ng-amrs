@@ -13,7 +13,6 @@ jshint -W026, -W116, -W098, -W003, -W068, -W004, -W033, -W030, -W117
       var httpBackend;
       var encounterResService;
       var OpenmrsSettings;
-
       var dummyEncounter = {
         uuid:'encounter-test-uuid',
         patient: {
@@ -54,10 +53,13 @@ jshint -W026, -W116, -W098, -W003, -W068, -W004, -W033, -W030, -W117
         expect(encounterResService).to.exists;
       });
 
-      it('Should call the appropriate rest end point when getEncounter is called', function() {
-        //undo once you figure out the error
-        //Trying to solve the karma problem so that travis can run perfectly well
-        httpBackend.expectGET(testRestUrl + 'encounter/encounter-test-uuid?v=default').respond(dummyEncounter);
+      it('Should call the appropriate rest end point when getEncounterByUuid is called', function() {
+        var customDefaultRep = 'custom:(uuid,encounterDatetime,' +
+                        'patient:(uuid,uuid),form:(uuid,name),' +
+                        'location:ref,encounterType:ref,provider:ref,' +
+                        'obs:(uuid,obsDatetime,concept:(uuid,uuid),value:ref,groupMembers))';
+        httpBackend.expectGET(testRestUrl + 'encounter/encounter-test-uuid?v=' +
+          customDefaultRep).respond(dummyEncounter);
         encounterResService.getEncounterByUuid('encounter-test-uuid', function(data){
           expect(data.uuid).to.equal(dummyEncounter.uuid);
         });
@@ -69,9 +71,14 @@ jshint -W026, -W116, -W098, -W003, -W068, -W004, -W033, -W030, -W117
       });
 
       it('Should make a call to retrieve a list of encounters for a patient', function (){
-          httpBackend.expectGET(testRestUrl + 'encounter?patient=patient-uuid&v=default').respond(dummyResponse);
+          var customDefaultRep = 'custom:(uuid,encounterDatetime,' +
+                        'patient:(uuid,uuid),form:(uuid,name),' +
+                        'location:ref,encounterType:ref,provider:ref)';
+          httpBackend.expectGET(testRestUrl + 'encounter?patient=patient-uuid&v=' +
+            customDefaultRep).respond(dummyResponse);
           encounterResService.getPatientEncounters('patient-uuid',function(data){
-            expect(data[0].uuid).to.equal('encounter-uuid-for-first-element');
+            console.log(data);
+            expect(data[1].uuid).to.equal('encounter-uuid-for-first-element');
           },function(error){console.log('Error')});
           httpBackend.flush();
       });
@@ -80,7 +87,7 @@ jshint -W026, -W116, -W098, -W003, -W068, -W004, -W033, -W030, -W117
         var params = { patientUuid : 'patient-uuid', rep: 'ref'};
         httpBackend.expectGET(testRestUrl + 'encounter?patient=patient-uuid&v=ref').respond(dummyResponse);
         encounterResService.getPatientEncounters(params,function(data){
-          expect(data[0].uuid).to.equal('encounter-uuid-for-first-element');
+          expect(data[1].uuid).to.equal('encounter-uuid-for-first-element');
         },function(error){console.log('Error')});
           httpBackend.flush();
       });

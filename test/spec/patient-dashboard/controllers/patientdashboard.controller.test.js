@@ -13,6 +13,7 @@ jshint -W098, -W117, -W030
 
     beforeEach(function() {
       module('app.patientdashboard');
+      module('app.formentry');
     });
 
     beforeEach(module('ui.router')); //to enable using stateparams
@@ -37,12 +38,14 @@ jshint -W098, -W117, -W030
 
     it('PatientDashboardCtrl controller should have all Injected Services', function() {
       //debugger;
+
       expect(controller).to.exist;
     });
 
-    it('patient Object should be created successfully', function() {
+    it('patient Object should be created successfully in the Scope', function() {
       //debugger;
-      expect(scope.patient).to.exist;
+      //console.log(scope);
+      expect(scope).to.have.property('patient');
     });
 
   });
