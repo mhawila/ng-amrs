@@ -580,4 +580,14 @@ module.exports = function (grunt) {
     'test',
     'build'
   ]);
+  
+  function _splitVersionNumber(version) {
+      var parts = version.split('.');
+      return {
+          array: parts,
+          major: parts[0],
+          minor: parts[1],
+          patch: parts[2]
+      };
+  }
 };
