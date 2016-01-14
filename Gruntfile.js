@@ -451,12 +451,19 @@ module.exports = function (grunt) {
       
       //Make native calls 
       var exec = require('sync-exec');
-  
-      var ret = exec('git branch ' + branch);
+      
+      // Cache current branch which will mostly be 'master'
+      var curBranch = exec('git symbolic-ref HEAD --short').stdout;
+      var ret = exec('git checkout -b ' + branch);
       if(ret.stdout !== '') grunt.log.writeln(ret.stdout);
       if(ret.stderr !== '') grunt.log.errorlns(ret.stderr);
       
       if(ret.status === 0) {
+          // Update the version to SNAPSHOT
+          grunt.task.run('snapshot');
+          
+          //Switch back to the original branch
+          exec('git checkout ' + curBranch);
           grunt.log.writeln('Setting ' + branch + ' to track '+ upstream 
                             + '/' + branch);
           ret = exec('git push -u ' + upstream + ' ' + branch);
